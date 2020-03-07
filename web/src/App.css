@@ -1,0 +1,38 @@
+.site-footer {
+  background-color: #e3f2fd;
+  padding: 2px 0; }
+div#content {
+  padding-bottom: 30px;
+}  
+.jumbotron.header {
+  margin: 0;
+  padding: 30px;
+  background-image: linear-gradient(to right, #5637dd, #3046C5, #60106b);
+  color: white; }
+div.header {
+  background-image: linear-gradient(to right, #5637dd, #3046C5, #60106b);
+  color: white;
+  padding: 5px;
+}
+
+.jumbotron {
+   margin: 0;
+} 
+
+.row-content {
+  padding: 10px 0;
+} 
+.row-content:not(:last-child) {
+  border-bottom: 1px ridge blue;
+}
+
+nav {
+  background-color: #e3f2fd;
+}
+
+div#content.homeHighlights .media-body {
+ margin-left: 30px;
+ margin-right: 30px;
+ font-size: x-large; 
+ line-height: 2.25em;
+}
