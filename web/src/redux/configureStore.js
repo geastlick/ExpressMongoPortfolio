@@ -1,12 +1,12 @@
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 
-import { Customers } from './customers.js';
+import { Customers } from './customers/customers.js';
 import { Features } from './features.js';
-import { Inventory } from './inventory.js';
-import { Orders } from './orders.js';
-import { Products } from './products.js';
-import { Users } from './users.js';
+import { Inventory } from './inventory/inventory.js';
+import { Orders } from './orders/orders.js';
+import { Products } from './products/products.js';
+import { Users } from './users/users.js';
 
 export const ConfigureStore = () => {
     const store = createStore(

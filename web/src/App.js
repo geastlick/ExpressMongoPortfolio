@@ -15,7 +15,11 @@ import Inventory from './components/Inventory';
 import Orders from './components/Orders';
 import Products from './components/Products';
 
-import { userLogin, userLogout, fetchProfile, fetchCustomers, fetchInventory, fetchOrders, fetchProducts } from './redux/ActionCreators';
+import { userLogin, userLogout, fetchProfile } from './redux/users/ActionCreators';
+import { fetchCustomers } from './redux/customers/ActionCreators';
+import { fetchInventory } from './redux/inventory/ActionCreators';
+import { fetchOrders } from './redux/orders/ActionCreators';
+import { fetchProducts } from './redux/products/ActionCreators';
 
 const mapStateToProps = state => {
   return {
