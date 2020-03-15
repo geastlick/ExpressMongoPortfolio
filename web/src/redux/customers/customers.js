@@ -12,6 +12,12 @@ export const Customers = (state = {
             return {...state, isLoading: true, errMess: null, customers: []};
         case ActionTypes.CUSTOMERS_FAILED:
             return {...state, isLoading: false, errMess: action.payload};
+        case ActionTypes.ADD_CUSTOMER:
+            return {...state, isLoading: false, errMess: null, customers: customers.concat(action.payload)};
+        case ActionTypes.DELETE_CUSTOMER:
+            return {...state, isLoading: false, errMess: null, customers: customers.filter(customer => customer.id != action.payload)};
+        case ActionTypes.UPDATE_CUSTOMER:
+            return {...state, isLoading: false, errMess: null, customers: customers.filter(customer => customer.id != action.payload.id).concat(action.payload)};
         default:
             return state;
     }

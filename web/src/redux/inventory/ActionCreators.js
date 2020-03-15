@@ -14,6 +14,22 @@ export const addInventory = inventory => ({
     payload: inventory
 });
 
+
+export const addItem = item => ({
+    type: ActionTypes.ADD_ITEM,
+    payload: item
+});
+
+export const deleteItem = itemId => ({
+    type: ActionTypes.DELETE_ITEM,
+    payload: itemId
+});
+
+export const updateItem = item => ({
+    type: ActionTypes.UPDATE_ITEM,
+    payload: item
+});
+
 export const fetchInventory = () => dispatch => {
     dispatch(inventoryLoading());
     const token = localStorage.token;

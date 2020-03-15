@@ -12,7 +12,13 @@ export const Products = (state = {
             return {...state, isLoading: true, errMess: null, products: []};
         case ActionTypes.PRODUCTS_FAILED:
             return {...state, isLoading: false, errMess: action.payload};
-        default:
-            return state;
+            case ActionTypes.ADD_PRODUCT:
+                return {...state, isLoading: false, errMess: null, products: products.concat(action.payload)};
+            case ActionTypes.DELETE_PRODUCT:
+                return {...state, isLoading: false, errMess: null, products: products.filter(product => product.id != action.payload)};
+            case ActionTypes.UPDATE_PRODUCT:
+                return {...state, isLoading: false, errMess: null, products: products.filter(product => product.id != action.payload.id).concat(action.payload)};
+            default:
+                return state;
     }
 };

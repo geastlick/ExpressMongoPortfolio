@@ -14,6 +14,21 @@ export const addProducts = products => ({
     payload: products
 });
 
+export const addProduct = product => ({
+    type: ActionTypes.ADD_PRODUCT,
+    payload: product
+});
+
+export const deleteProduct = productId => ({
+    type: ActionTypes.DELETE_PRODUCT,
+    payload: productId
+});
+
+export const updateProduct = product => ({
+    type: ActionTypes.UPDATE_PRODUCT,
+    payload: product
+});
+
 export const fetchProducts = () => dispatch => {
     dispatch(productsLoading());
     const token = localStorage.token;

@@ -14,6 +14,21 @@ export const addOrders = orders => ({
     payload: orders
 });
 
+export const addOrder = order => ({
+    type: ActionTypes.ADD_ORDER,
+    payload: order
+});
+
+export const deleteOrder = orderId => ({
+    type: ActionTypes.DELETE_ORDER,
+    payload: orderId
+});
+
+export const updateOrder = order => ({
+    type: ActionTypes.UPDATE_ORDER,
+    payload: order
+});
+
 export const fetchOrders = () => dispatch => {
     dispatch(ordersLoading());
     const token = localStorage.token;

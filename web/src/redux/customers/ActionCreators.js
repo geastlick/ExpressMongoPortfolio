@@ -1,5 +1,7 @@
 import * as ActionTypes from './ActionTypes';
 
+// dispatch fetchCustomers(), addCustomer(customer), deleteCustomer(customerId), putCustomer(customer), patchCustomer(customer)
+
 export const customersLoading = () => ({
     type: ActionTypes.CUSTOMERS_LOADING
 });
@@ -12,6 +14,21 @@ export const customersFailed = errMess => ({
 export const addCustomers = customers => ({
     type: ActionTypes.ADD_CUSTOMERS,
     payload: customers
+});
+
+export const addCustomer = customer => ({
+    type: ActionTypes.ADD_CUSTOMER,
+    payload: customer
+});
+
+export const deleteCustomer = customerId => ({
+    type: ActionTypes.DELETE_CUSTOMER,
+    payload: customerId
+});
+
+export const updateCustomer = customer => ({
+    type: ActionTypes.UPDATE_CUSTOMER,
+    payload: customer
 });
 
 export const fetchCustomers = () => dispatch => {
