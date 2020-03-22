@@ -13,11 +13,11 @@ export const Orders = (state = {
         case ActionTypes.ORDERS_FAILED:
             return {...state, isLoading: false, errMess: action.payload};
             case ActionTypes.ADD_ORDER:
-                return {...state, isLoading: false, errMess: null, orders: orders.concat(action.payload)};
+                return {...state, isLoading: false, errMess: null, orders: state.orders.concat(action.payload)};
             case ActionTypes.DELETE_ORDER:
-                return {...state, isLoading: false, errMess: null, orders: orders.filter(order => order.id != action.payload)};
+                return {...state, isLoading: false, errMess: null, orders: state.orders.filter(order => order.id !== action.payload)};
             case ActionTypes.UPDATE_ORDER:
-                return {...state, isLoading: false, errMess: null, orders: orders.filter(order => order.id != action.payload.id).concat(action.payload)};
+                return {...state, isLoading: false, errMess: null, orders: state.orders.filter(order => order.id !== action.payload.id).concat(action.payload)};
             default:
                 return state;
     }

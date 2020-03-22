@@ -13,11 +13,11 @@ export const Inventory = (state = {
         case ActionTypes.INVENTORY_FAILED:
             return {...state, isLoading: false, errMess: action.payload};
             case ActionTypes.ADD_ITEM:
-                return {...state, isLoading: false, errMess: null, inventory: inventory.concat(action.payload)};
+                return {...state, isLoading: false, errMess: null, inventory: state.inventory.concat(action.payload)};
             case ActionTypes.DELETE_ITEM:
-                return {...state, isLoading: false, errMess: null, inventory: inventory.filter(item => item.id != action.payload)};
+                return {...state, isLoading: false, errMess: null, inventory: state.inventory.filter(item => item.id !== action.payload)};
             case ActionTypes.UPDATE_ITEM:
-                return {...state, isLoading: false, errMess: null, inventory: inventory.filter(item => item.id != action.payload.id).concat(action.payload)};
+                return {...state, isLoading: false, errMess: null, inventory: state.inventory.filter(item => item.id !== action.payload.id).concat(action.payload)};
             default:
                 return state;
     }
