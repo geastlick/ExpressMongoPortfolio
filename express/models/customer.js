@@ -41,7 +41,8 @@ const orderItem = new Schema({
         amount: Currency,
         description: String
     }]
-})
+}, {discriminatorkey: "rentalPeriod"});
+
 const order = new Schema({
     number: String,
     items: [orderItem]
@@ -54,6 +55,10 @@ const customerSchema = new Schema({
   contacts: [contact],
   orders: [order]
 });
+const monthlyRental = customerSchema.path('orders.items').discriminator('monthly', new Schema({ months: Number}));
+const weeklyRental  = customerSchema.path('orders.items').discriminator('weekly', new Schema({ weeks: Number }));
+const dailyRental   = customerSchema.path('orders.items').discriminator('daily', new Schema({ days: Number }));
+const dateRental    = customerSchema.path('orders.items').discriminator('date', new Schema({ pickupEstimate: Date}));
 
 const Customer = mongoose.model('Customer', customerSchema);
 

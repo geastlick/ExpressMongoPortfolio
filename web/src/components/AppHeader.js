@@ -3,7 +3,7 @@ import { Jumbotron, NavbarBrand, Row, Col } from 'reactstrap';
 
 class AppHeader extends Component {
     render() {
-        if (!this.props.currentUser.name) {
+        if (!this.props.currentUser || !this.props.currentUser.name) {
             return (
                 <Jumbotron fluid className="header">
                     <div className="container">

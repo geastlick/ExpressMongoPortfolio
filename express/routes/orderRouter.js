@@ -11,8 +11,18 @@ orderRouter.route('/')
     next();
 })
 .get((req, res, next) => {
-    Customer.find({},{orders:1})
+    Customer.aggregate([
+        { "$unwind": "$orders" },
+        { "$unwind": "$orders.items" },
+        { "$project": {
+            "_id": 0,
+            "customerId": "$_id",
+            "name": "$name",
+            "order": "$orders"
+        }}
+    ])
     .then(orders => {
+        console.log(orders);
         res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');
         res.json(orders);

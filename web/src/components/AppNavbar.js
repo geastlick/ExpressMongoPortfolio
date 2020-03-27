@@ -19,7 +19,7 @@ class AppNavbar extends Component {
     render() {
         const toggleNav = () => this.setState({ isNavOpen: !this.state.isNavOpen });
 
-        if (!this.props.currentUser.name) {
+        if (!this.props.currentUser || !this.props.currentUser.name) {
             return (
                 <React.Fragment>
                     <Navbar expand="md" light className="border-bottom border-primary">

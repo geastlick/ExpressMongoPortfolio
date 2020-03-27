@@ -50,9 +50,11 @@ const User = require('./models/user');
 User.findByUsername("admin")
 .then(user => { 
   if(user) {
-   setPass(user, adminPwd);
+    user.name="Admin User";
+    user.role="Admin";
+    setPass(user, adminPwd);
   } else {
-  User.register(new User({username: "admin", name: "Admin User"}), adminPwd)
+  User.register(new User({username: "admin", name: "Admin User", role: "Admin" }), adminPwd)
   .then(pwd => { console.log("Admin Register: ",adminPwd); })
   }
 });

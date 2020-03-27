@@ -1,13 +1,15 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const Customer = require('./customer');
-
 const scheduleSchema = new Schema({
-    customerId: String,
+    customerId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Customer.Orders.OrderItem'
+    },
     productName: String,
     activity: String,
     requested: Date,
+    status: String,
     location: String
 });
 
