@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Table } from 'reactstrap';
-import BadgeIcon from './BadgeIcon';
+import BadgeIcon from '../common/BadgeIcon';
 
 const CustomerRow = ({customer}) => {
         const rowSelected = (e) => {
