@@ -3,17 +3,17 @@ import { Switch, Route, Redirect, withRouter, useLocation } from 'react-router-d
 import { connect } from 'react-redux';
 import './App.css';
 
-import AppHeader from './components/AppHeader';
-import AppNavbar from './components/AppNavbar';
-import FeatureCards from './components/FeatureCards';
-import ContactUs from './components/ContactUs';
-import AboutUs from './components/AboutUs';
-import AppFooter from './components/AppFooter';
-import SignIn from './components/SignIn';
-import Customers from './components/Customers';
-import Inventory from './components/Inventory';
-import Orders from './components/Orders';
-import Products from './components/Products';
+import AppHeader from './components/navigation/AppHeader';
+import AppNavbar from './components/navigation/AppNavbar';
+import FeatureCards from './components/public/FeatureCards';
+import ContactUs from './components/public/ContactUs';
+import AboutUs from './components/public/AboutUs';
+import AppFooter from './components/navigation/AppFooter';
+import SignIn from './components/navigation/SignIn';
+import Customers from './components/protected/Customers';
+import Inventory from './components/protected/Inventory';
+import Orders from './components/protected/Orders';
+import Products from './components/protected/Products';
 
 import { userLogin, userLogout, fetchProfile } from './redux/users/ActionCreators';
 import { fetchCustomers } from './redux/customers/ActionCreators';
