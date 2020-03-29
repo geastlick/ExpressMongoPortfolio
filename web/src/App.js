@@ -48,19 +48,6 @@ const NavBar = (props) => {
   return <AppNavbar currentUser={props.currentUser} userLogout={props.userLogout} location={location.pathname} />;
 }
 
-const PrivateRoute = ({ component: Component, ...rest }) => {
-  return (
-    <Route {...rest} render={() => (
-      rest.currentUser.name
-        ? <Component {...rest} />
-        : <Redirect to={{
-          pathname: '/signin',
-          state: { from: rest.location }
-        }} />
-    )} />
-  );
-}
-
 class App extends Component {
 
   componentDidMount() {
@@ -78,22 +65,10 @@ class App extends Component {
           <Route path="/about" component={AboutUs} />
           <Route path="/signin" render={() => <SignIn users={this.props.users} userLogin={this.props.userLogin} />} />
 
-          <PrivateRoute path="/customer" component={Customers} currentUser={this.props.users.currentUser}
-                       fetchCustomers={this.props.fetchCustomers} fetchInventory={this.props.fetchInventory} fetchOrders={this.props.fetchOrders} fetchProducts={this.props.fetchProducts}
-                       customers={this.props.customers} inventory={this.props.inventory} orders={this.props.orders} products={this.props.products}
-           />
-          <PrivateRoute path="/inventory" component={Inventory} currentUser={this.props.users.currentUser}
-                       fetchCustomers={this.props.fetchCustomers} fetchInventory={this.props.fetchInventory} fetchOrders={this.props.fetchOrders} fetchProducts={this.props.fetchProducts}
-                       customers={this.props.customers} inventory={this.props.inventory} orders={this.props.orders} products={this.props.products}
-           />
-          <PrivateRoute path="/order" component={Orders} currentUser={this.props.users.currentUser}
-                       fetchCustomers={this.props.fetchCustomers} fetchInventory={this.props.fetchInventory} fetchOrders={this.props.fetchOrders} fetchProducts={this.props.fetchProducts}
-                       customers={this.props.customers} inventory={this.props.inventory} orders={this.props.orders} products={this.props.products}
-           />
-          <PrivateRoute path="/product" component={Products} currentUser={this.props.users.currentUser}
-                       fetchCustomers={this.props.fetchCustomers} fetchInventory={this.props.fetchInventory} fetchOrders={this.props.fetchOrders} fetchProducts={this.props.fetchProducts}
-                       customers={this.props.customers} inventory={this.props.inventory} orders={this.props.orders} products={this.props.products}
-           />
+          <Route path="/customer" render={() => <Customers currentUser={this.props.users.currentUser} customers={this.props.customers} fetchCustomers={this.props.fetchCustomers} />} />
+          <Route path="/inventory" render={() => <Inventory currentUser={this.props.users.currentUser} inventory={this.props.inventory} fetchInventory={this.props.fetchInventory} />} />
+          <Route path="/order" render={() => <Orders currentUser={this.props.users.currentUser} orders={this.props.orders} fetchOrders={this.props.fetchOrders} />} />
+          <Route path="/product" render={() => <Products currentUser={this.props.users.currentUser} products={this.props.products} fetchProducts={this.props.fetchProducts} />} />
 
           <Redirect to="/home" />
         </Switch>

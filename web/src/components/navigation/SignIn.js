@@ -41,7 +41,6 @@ class SignIn extends Component {
             return <Redirect to="/customer" />
         }
 
-        console.log(this.props);
         return (
             <div id="content" className="container">
                 <div className="row row-content">

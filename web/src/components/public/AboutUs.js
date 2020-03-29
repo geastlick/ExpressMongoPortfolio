@@ -98,10 +98,14 @@ const AboutUs = (props) => {
                                 <div className="row mt-3">
                                     <div className="offset-md-2 col">
                                         <a href="https://www.facebook.com/magnetsigns/" target="_blank" rel="noopener noreferrer"
-                                            className="btn btn-social btn-facebook"><i className="fa fa-facebook"></i>
+                                            className="btn btn-primary">
+                                                <i className="fab fa-facebook-f fa-md"></i>
+                                                <span style={{"borderLeft": "1px solid", "marginLeft": "0.75em", "marginRight": "0.75em"}} />
                                             Magnetsigns Corporate</a>&nbsp;&nbsp;
                                         <a href="https://www.facebook.com/magnetsignsfortworthwesttx" target="_blank" rel="noopener noreferrer"
-                                            className="btn btn-social btn-facebook"><i className="fa fa-facebook"></i>
+                                            className="btn btn-primary">
+                                                <i className="fab fa-facebook-f fa-md"></i>
+                                                <span style={{"borderLeft": "1px solid", "marginLeft": "0.75em", "marginRight": "0.75em"}} />
                                             MagnetsignsFTW Franchise</a>
                                     </div>
                                 </div>
