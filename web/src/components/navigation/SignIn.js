@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
-import { Card, CardHeader, CardBody, Label, Row, Button } from 'reactstrap';
-import { Control, LocalForm, Errors } from 'react-redux-form';
+import { Card, CardHeader, CardBody, Label, Row, Button, Form, Input } from 'reactstrap';
 import { Redirect } from 'react-router-dom';
-
-const required = val => val && val.length;
 
 class SignIn extends Component {
 
@@ -13,12 +10,22 @@ class SignIn extends Component {
         this.handleSubmit = this.handleSubmit.bind(this);
 
         this.state = {
-            redirectToReferrer: false
+            redirectToReferrer: false,
+            username: '',
+            loginPassword: ''
         }
     }
 
-    handleSubmit(values) {
-        this.props.userLogin(values.username, values.loginPassword).then((data) => {
+    usernameChanged = (e) => {
+        this.setState({username: e.target.value});
+    };
+    passwordChanged = (e) => {
+        this.setState({loginPassword: e.target.value});
+    };
+
+    handleSubmit(e) {
+        e.preventDefault();
+        this.props.userLogin(this.state.username, this.state.loginPassword).then((data) => {
             if (this.props.users.currentUser.name) {
                 this.setState({
                     redirectToReferrer: true
@@ -26,7 +33,7 @@ class SignIn extends Component {
             }
             return data;
         });
-    }
+    };
 
     signinErrors = () => {
         if(this.props.users.errMess) {
@@ -51,43 +58,27 @@ class SignIn extends Component {
                             </CardHeader>
                             <CardBody>
                                 {this.signinErrors()}
-                                <LocalForm onSubmit={values => this.handleSubmit(values)}>
+                                <Form onSubmit={this.handleSubmit}>
                                     <Row className="form-group">
                                         <Label className="sr-only" htmlFor="username">Username</Label>
-                                        <Control.text model=".username" id="username" name="username" placeholder="Username" className="form-control"
-                                            validators={{
-                                                required
-                                            }}
-                                        />
-                                        <Errors className="text-danger" model=".username" show="touched" component="div"
-                                            messages={{
-                                                required: 'Required'
-                                            }}
+                                        <Input id="username" name="username" placeholder="Username" className="form-control" onChange={this.usernameChanged}
                                         />
                                     </Row>
                                     <Row className="form-group">
                                         <Label className="sr-only" htmlFor="loginPassword">Password</Label>
-                                        <Control.text type="password" model=".loginPassword" id="loginPassword" name="loginPassword" placeholder="Password" className="form-control"
-                                            validators={{
-                                                required
-                                            }}
-                                        />
-                                        <Errors className="text-danger" model=".loginPassword" show="touched" component="div"
-                                            messages={{
-                                                required: 'Required'
-                                            }}
+                                        <Input type="password" id="loginPassword" name="loginPassword" placeholder="Password" className="form-control" onChange={this.passwordChanged}
                                         />
                                     </Row>
                                     <Row className="form-group">
                                         <div className="form-check">
                                             <Label check>
-                                                <Control.checkbox model=".rememberMe" name="rememberMe" className="form-check-input" /> Remember me</Label>
+                                                <Input type="checkbox" name="rememberMe" className="form-check-input" /> Remember me</Label>
                                         </div>
                                     </Row>
                                     <Row className="form-group">
                                         <Button type="submit" color="primary">Sign in</Button>
                                     </Row>
-                                </LocalForm>
+                                </Form>
                             </CardBody>
                         </Card>
                     </div></div></div>

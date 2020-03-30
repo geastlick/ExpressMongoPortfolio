@@ -4,8 +4,44 @@ import { Typeahead } from 'react-bootstrap-typeahead';
 import { Form, FormGroup, Label, Input, Button, Col } from 'reactstrap';
 
 const CustomerDetail = ({customer, mode}) => {
+    const fieldsetStyle = {
+        "margin": "8px",
+        "border": "1px solid silver",
+        "padding": "8px",    
+        "borderRadius": "4px"
+    };
+    const legendStyle = {
+        "padding": "2px"    
+    };
+
     return (
-        <div>{JSON.stringify(customer)}</div>
+        <React.Fragment>
+            <fieldset style={fieldsetStyle}><legend style={legendStyle}>Address</legend>
+                <FormGroup row>
+                    <Label for="line1" sm={1}>Line 1</Label>
+                    <Col sm={11}>
+                        <Input id="line1" type="text" readOnly={mode === "read"} value={customer.address.line1} />
+                    </Col>
+                    <Label for="line2" sm={1}>Line 2</Label>
+                    <Col sm={11}>
+                        <Input id="line2" type="text" readOnly={mode === "read"} value={customer.address.line2} />
+                    </Col>
+                    <Label for="city" sm={1}>City</Label>
+                    <Col sm={6}>
+                        <Input id="city" type="text" readOnly={mode === "read"} value={customer.address.city} />
+                    </Col>
+                    <Label for="state" sm={1}>State</Label>
+                    <Col sm={1}>
+                        <Input id="state" type="text" readOnly={mode === "read"} value={customer.address.state} />
+                    </Col>
+                    <Label for="zip" sm={1}>Zip Code</Label>
+                    <Col sm={2}>
+                        <Input id="zip" type="text" readOnly={mode === "read"} value={customer.address.zip} />
+                    </Col>
+                </FormGroup>
+            </fieldset>
+<div>{JSON.stringify(customer)}</div>
+        </React.Fragment>
     );
 }
 
