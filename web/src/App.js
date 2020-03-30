@@ -63,7 +63,7 @@ class App extends Component {
           <Route path="/home" render={() => <FeatureCards features={this.props.features} />} />
           <Route path="/contact" component={ContactUs} />
           <Route path="/about" component={AboutUs} />
-          <Route path="/signin" render={() => <SignIn users={this.props.users} userLogin={this.props.userLogin} />} />
+          <Route path="/signin" render={() => <SignIn users={this.props.users} userLogin={this.props.userLogin} history={this.props.history} />} />
 
           <Route path="/customer" render={() => <Customers currentUser={this.props.users.currentUser} customers={this.props.customers} fetchCustomers={this.props.fetchCustomers} />} />
           <Route path="/inventory" render={() => <Inventory currentUser={this.props.users.currentUser} inventory={this.props.inventory} fetchInventory={this.props.fetchInventory} />} />
