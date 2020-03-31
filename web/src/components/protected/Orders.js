@@ -19,7 +19,7 @@ class Orders extends Component {
                     <div className="col-12"><h2>Orders</h2><hr /></div>
                     <div className="row row-content">
                     <div className="col-12">
-                        {JSON.stringify(this.props.orders.orders)}
+                        {JSON.stringify(this.props.orders.orders, null, 2)}
                     </div>
                         </div></div></div>
         );

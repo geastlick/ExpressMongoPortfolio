@@ -19,7 +19,7 @@ class Inventory extends Component {
                     <div className="col-12"><h2>Inventory</h2><hr /></div>
                     <div className="row row-content">
                     <div className="col-12">
-                        {JSON.stringify(this.props.inventory.inventory)}
+                        {JSON.stringify(this.props.inventory.inventory, null, 2)}
                     </div>
                         </div></div></div>
         );

@@ -19,7 +19,7 @@ class Products extends Component {
                     <div className="col-12"><h2>Products</h2><hr /></div>
                     <div className="row row-content">
                     <div className="col-12">
-                        {JSON.stringify(this.props.products.products)}
+                        {JSON.stringify(this.props.products.products, null, 2)}
                     </div>
                         </div></div></div>
         );

@@ -1,49 +1,10 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
 import { Typeahead } from 'react-bootstrap-typeahead';
-import { Form, FormGroup, Label, Input, Button, Col } from 'reactstrap';
-
-const CustomerDetail = ({customer, mode}) => {
-    const fieldsetStyle = {
-        "margin": "8px",
-        "border": "1px solid silver",
-        "padding": "8px",    
-        "borderRadius": "4px"
-    };
-    const legendStyle = {
-        "padding": "2px"    
-    };
-
-    return (
-        <React.Fragment>
-            <fieldset style={fieldsetStyle}><legend style={legendStyle}>Address</legend>
-                <FormGroup row>
-                    <Label for="line1" sm={1}>Line 1</Label>
-                    <Col sm={11}>
-                        <Input id="line1" type="text" readOnly={mode === "read"} value={customer.address.line1} />
-                    </Col>
-                    <Label for="line2" sm={1}>Line 2</Label>
-                    <Col sm={11}>
-                        <Input id="line2" type="text" readOnly={mode === "read"} value={customer.address.line2} />
-                    </Col>
-                    <Label for="city" sm={1}>City</Label>
-                    <Col sm={6}>
-                        <Input id="city" type="text" readOnly={mode === "read"} value={customer.address.city} />
-                    </Col>
-                    <Label for="state" sm={1}>State</Label>
-                    <Col sm={1}>
-                        <Input id="state" type="text" readOnly={mode === "read"} value={customer.address.state} />
-                    </Col>
-                    <Label for="zip" sm={1}>Zip Code</Label>
-                    <Col sm={2}>
-                        <Input id="zip" type="text" readOnly={mode === "read"} value={customer.address.zip} />
-                    </Col>
-                </FormGroup>
-            </fieldset>
-<div>{JSON.stringify(customer)}</div>
-        </React.Fragment>
-    );
-}
+import { Form, FormGroup, Button, Input } from 'reactstrap';
+import { Formik } from 'formik';
+import { TextInput } from '../common/FormikFields';
+import * as Yup from 'yup';
 
 class Customers extends Component {
     constructor(props) {
@@ -73,11 +34,9 @@ class Customers extends Component {
       }
 
       handleEdit = () => {
-          console.log('Editing')
         this.setState({mode: "edit"});
       }
       handleAdd = () => {
-          console.log('Adding')
         this.setState({mode: "add"});
       }
       handleCancel = () => {
@@ -96,6 +55,15 @@ class Customers extends Component {
                 return {customerId: customer._id, customerName: customer.name, contactName: contact.name};
             });
         }));
+        const fieldsetStyle = {
+            "margin": "8px",
+            "border": "1px solid silver",
+            "padding": "8px",    
+            "borderRadius": "4px"
+        };
+        const legendStyle = {
+            "padding": "2px"    
+        };
 
         const Controls = () => {
             if(this.state.mode === "read") {
@@ -158,29 +126,58 @@ class Customers extends Component {
                     <hr />
                 </div>
                 {this.state.selection && Object.keys(this.state.selection).length !== 0 ?
-                <Form>
-                    <div className="row row-content mt-3" >
-                        <div className="col-8">
-                            <FormGroup row>
-                                <Label for="customerName" sm={3}>Customer Name</Label>
-                                <Col sm={9}>
-                                    <Input id="customerName" type="text" readOnly={this.state.mode === "read"} value={this.state.selection.customerName} />
-                                </Col>
-                            </FormGroup>
+                <Formik
+                    initialValues={this.props.customers.customers.filter(customer => customer._id === this.state.selection.customerId)[0]}
+                    validationSchema={Yup.object({
+                        name: Yup.string()
+                            .min(5, 'Must be between 5 and 30 characters')
+                            .max(30, 'Must be between 5 and 30 characters')
+                            .required('Required'),
+                        address: Yup.object({
+                            line1: Yup.string()
+                                .required('Required'),
+                            line2: Yup.string(),
+                            city: Yup.string()
+                                .required('Required'),
+                            state: Yup.string()
+                                .required('Required'),
+                            zip: Yup.string()
+                                .required('Required')
+                        })
+                    })}
+                    onSubmit={(values, { setSubmitting }) => {
+
+                    }}
+                >
+                {formik => (
+                    <Form>
+                        <div className="row row-content mt-3" >
+                            <div className="col-8">
+                                <FormGroup row>
+                                    <TextInput labelwidth="3" label="Customer Name" inputwidth="9" name="name" readOnly={this.state.mode === "read"} />
+                                </FormGroup>
+                            </div>
+                            <div className="offset-2 col-2">
+                                <Button outline color="primary" onClick={this.handleEdit} className="mr-2" aria-label="Edit"><i className="far fa-edit fa-lg"></i></Button>
+                                <Button outline color="warning" aria-label="Delete" className="mr-2"><i className="far fa-trash-alt fa-lg"></i></Button>
+                                <Button outline color="primary" onClick={this.handleAdd}  aria-label="Add"><i className="fas fa-plus fa-lg"></i></Button>
+                            </div>
                         </div>
-                        <div className="offset-2 col-2">
-                            <Button outline color="primary" onClick={this.handleEdit} className="mr-2" aria-label="Edit"><i className="far fa-edit fa-lg"></i></Button>
-                            <Button outline color="warning" aria-label="Delete" className="mr-2"><i className="far fa-trash-alt fa-lg"></i></Button>
-                            <Button outline color="primary" onClick={this.handleAdd}  aria-label="Add"><i className="fas fa-plus fa-lg"></i></Button>
+                        <div className="row">
+                            <fieldset style={fieldsetStyle}><legend style={legendStyle}>Address</legend>
+                                <FormGroup row>
+                                    <TextInput labelwidth="1" label="Line 1" inputwidth="11" name="address.line1" readOnly={this.state.mode === "read"} />
+                                    <TextInput labelwidth="1" label="Line 2" inputwidth="11" name="address.line2" readOnly={this.state.mode === "read"} />
+                                    <TextInput labelwidth="1" label="City" inputwidth="6" name="address.city" readOnly={this.state.mode === "read"} />
+                                    <TextInput labelwidth="1" label="State" inputwidth="1" name="address.state" readOnly={this.state.mode === "read"} />
+                                    <TextInput labelwidth="1" label="Zip Code" inputwidth="2" name="address.zip" readOnly={this.state.mode === "read"} />
+                                </FormGroup>
+                            </fieldset>
+                            <div>{JSON.stringify(formik.values, null, 2)}</div>
                         </div>
-                    </div>
-                    <div className="row">
-                        <CustomerDetail
-                            customer={this.props.customers.customers.filter(customer => customer._id === this.state.selection.customerId)[0]}
-                            mode={this.state.mode}
-                         />
-                    </div>
-                </Form>
+                    </Form>
+                )}
+                </Formik>
                 :
                 <React.Fragment>
                     <div className="row row-content mt-3">

@@ -22,9 +22,9 @@
     "redux-thunk": "^2.3.0",
     "yup": "^0.28.3"
   },
-  "proxy": "http://localhost:3006",
+  "proxy": "https://localhost:3449",
   "scripts": {
-    "start": "react-scripts start",
+    "start": "env PORT=3001 HTTPS=true SSL_CRT_FILE=server.cert SSL_KEY_FILE=server.key react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
