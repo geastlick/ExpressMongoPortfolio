@@ -1,16 +1,21 @@
 const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
+const methodOverride = require('method-override');
 const passport = require('passport');
-const logger = require('morgan');
+const morgan = require('morgan');
 const config = require('./config');
+const restful = require('node-restful');
+const authenticate = require('./authenticate');
 
 const authRouter = require('./routes/authRouter');
+const orderRouter = require('./routes/orderRouter');
+/*  Swapping out routers for node-restful
 const customerRouter = require('./routes/customerRouter');
 const inventoryRouter = require('./routes/inventoryRouter');
-const orderRouter = require('./routes/orderRouter');
 const productRouter = require('./routes/productRouter');
 const scheduleRouter = require('./routes/scheduleRouter');
+*/
 
 const mongoose = require('mongoose');
 const url = config.mongoUrl;
@@ -72,19 +77,44 @@ app.all('*', (req, res, next) => {
   }
 });
 
-app.use(logger('dev'));
+app.use(morgan('dev'));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(methodOverride());
 app.use(passport.initialize());
 
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/auth', authRouter);
+/*  Swapping out routers for node-restful
 app.use('/api/customers', customerRouter);
 app.use('/api/inventory', inventoryRouter);
-app.use('/api/orders', orderRouter);
 app.use('/api/products', productRouter);
 app.use('/api/schedules', scheduleRouter);
+*/
+
+app.use('/api/orders', orderRouter);
+
+const customerModel = require('./models/customer');
+const Customer = app.resource = restful.model('Customer', customerModel.customerSchema).methods(['get','post','put','delete']);
+Customer.before('get', authenticate.verifyUser).before('post', authenticate.verifyUser).before('put', authenticate.verifyUser).before('delete', authenticate.verifyUser);
+Customer.register(app, '/api/customers');
+
+const inventoryModel = require('./models/inventory');
+const Inventory = app.resource = restful.model('Inventory', inventoryModel.inventorySchema).methods(['get','post','put','delete']);
+Inventory.before('get', authenticate.verifyUser).before('post', authenticate.verifyUser).before('put', authenticate.verifyUser).before('delete', authenticate.verifyUser);
+Inventory.register(app, '/api/inventory');
+
+const productModel = require('./models/product');
+const Product = app.resource = restful.model('Product', productModel.productSchema).methods(['get','post','put','delete']);
+Product.before('get', authenticate.verifyUser).before('post', authenticate.verifyUser).before('put', authenticate.verifyUser).before('delete', authenticate.verifyUser);
+Product.register(app, '/api/products');
+
+const scheduleModel = require('./models/schedule');
+const Schedule = app.resource = restful.model('Schedule', scheduleModel.scheduleSchema).methods(['get','post','put','delete']);
+Schedule.before('get', authenticate.verifyUser).before('post', authenticate.verifyUser).before('put', authenticate.verifyUser).before('delete', authenticate.verifyUser);
+Schedule.register(app, '/api/schedules');
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

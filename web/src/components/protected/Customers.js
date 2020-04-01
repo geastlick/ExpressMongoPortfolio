@@ -11,6 +11,7 @@ class Customers extends Component {
         super(props);
         this.state = {
             mode: "read",
+            action: "read",
             selectionType: "Customer",
             selection: {}
         }
@@ -19,31 +20,34 @@ class Customers extends Component {
         if(this.props.currentUser &&
             this.props.currentUser.name &&
             this.props.customers.customers.length === 0) {
-             this.props.fetchCustomers();
+                this.props.fetchCustomers();
         }
-      }
+    }
 
-      selectionMade = (selected) => {
-          this.setState({selection: selected[0]});
-      }
+    selectionMade = (selected) => {
+        this.setState({selection: selected[0]});
+    }
 
-      changeSelectionType = (e) => {
-          this.setState({
-              selectionType: e.target.value
-          });
-      }
+    changeSelectionType = (e) => {
+        this.setState({
+            selectionType: e.target.value
+        });
+    }
 
-      handleEdit = () => {
-        this.setState({mode: "edit"});
-      }
-      handleAdd = () => {
-        this.setState({mode: "add"});
-      }
-      handleCancel = () => {
-          this.setState({mode: "read"});
-      }
+    handleEdit = () => {
+        this.setState({action: "edit", mode: "update"});
+    }
+    handleAdd = () => {
+        this.setState({action: "add", mode: "update"});
+    }
+    handleDelete = () => {
+        this.setState({action: "delete", mode: "read"});
+    }
+    handleCancel = () => {
+        this.setState({action: "read", mode: "read"});
+    }
 
-      render() {
+    render() {
         if(!this.props.currentUser || !this.props.currentUser.name) {
             return <Redirect to={{pathname: '/signin', state: {from: this.location}}} />
         }
@@ -65,56 +69,65 @@ class Customers extends Component {
             "padding": "2px"    
         };
 
-        const Controls = () => {
-            if(this.state.mode === "read") {
+        const SearchField = () => {
+            if(this.state.action === "read") {
                 if(this.state.selectionType === "Customer") {
                     return (
-                        <React.Fragment>
-                            <div className="col-5">
-                                <Typeahead
-                                    id="Customer Selection"
-                                    options={customerSearchOptions}
-                                    labelKey="customerName"
-                                    placeholder="Choose a customer..."
-                                    onChange={this.selectionMade}
-                                />
-                            </div>
-                            <div className="col-3">
-                                <Input type="select" name="select" id="selectionType" onChange={this.changeSelectionType} value={this.state.selectionType}>
-                                    <option value="Customer">Search by Customer</option>
-                                    <option value="Contact">Search by Contact</option>
-                                </Input>
-                            </div>
-                        </React.Fragment>
+                        <Typeahead
+                            id="Customer Selection"
+                            options={customerSearchOptions}
+                            labelKey="customerName"
+                            placeholder="Choose a customer..."
+                            onChange={this.selectionMade}
+                        />
                     );
                 } else {
                     return (
-                        <React.Fragment>
-                         <div className="col-5">
-                                <Typeahead
-                                    id="Contact Selection"
-                                    options={contactSearchOptions}
-                                    labelKey="contactName"
-                                    placeholder="Choose a contact..."
-                                    onChange={this.selectionMade}
-                                />
-                            </div>
-                            <div className="col-3">
-                                <Input type="select" name="select" id="selectionType" onChange={this.changeSelectionType} value={this.state.selectionType}>
-                                    <option value="Customer">Search by Customer</option>
-                                    <option value="Contact">Search by Contact</option>
-                                </Input>
-                            </div>
-                        </React.Fragment>
+                        <Typeahead
+                            id="Contact Selection"
+                            options={contactSearchOptions}
+                            labelKey="contactName"
+                            placeholder="Choose a contact..."
+                            onChange={this.selectionMade}
+                        />
                     );
                 }
-            } else if(this.state.mode === "edit" || this.state.mode === "add") {
+            } else return <React.Fragment></React.Fragment>;
+        }
+        const SearchType = () => {
+            if(this.state.action === "read") {
+                return (
+                    <Input type="select" name="select" id="selectionType" onChange={this.changeSelectionType} value={this.state.selectionType}>
+                        <option value="Customer">Search by Customer</option>
+                        <option value="Contact">Search by Contact</option>
+                    </Input>
+                );
+            } else return <React.Fragment></React.Fragment>;
+        }
+
+        const Controls = () => {
+            if(this.state.action === "read") {
+                return (
+                    <div className="offset-2 col-2">
+                        <Button outline color="primary" onClick={this.handleEdit} className="mr-2" aria-label="Edit"><i className="far fa-edit fa-lg"></i></Button>
+                        <Button outline color="warning" onClick={this.handleDelete} className="mr-2" aria-label="Delete"><i className="far fa-trash-alt fa-lg"></i></Button>
+                        <Button outline color="primary" onClick={this.handleAdd}  aria-label="Add"><i className="fas fa-plus fa-lg"></i></Button>
+                    </div>
+                );
+            } else if(this.state.action === "edit" || this.state.action === "add") {
                 return (
                     <React.Fragment>
-                        <div className="offset-6 col-1"><Button onClick={this.handleCancel} color="secondary">Cancel</Button></div>
+                        <div className="offset-2 col-1"><Button onClick={this.handleCancel} color="secondary">Cancel</Button></div>
                         <div className="col-1"><Button color="primary">Save</Button></div>
                     </React.Fragment>
                 );
+            } else if(this.state.action === "delete") {
+                return (
+                    <React.Fragment>
+                        <div className="offset-2 col-1"><Button onClick={this.handleCancel} color="secondary">Cancel</Button></div>
+                        <div className="col-1"><Button color="danger">Confirm</Button></div>
+                    </React.Fragment>
+                )
             }
         }
 
@@ -122,7 +135,12 @@ class Customers extends Component {
             <div id="content" className="container">
                 <div className="row row-content">
                     <div className="col-4"><h2>Customers</h2></div>
-                    <Controls />
+                    <div className="col-5">
+                        <SearchField />
+                    </div>
+                    <div className="col-3">
+                        <SearchType />
+                    </div>
                     <hr />
                 </div>
                 {this.state.selection && Object.keys(this.state.selection).length !== 0 ?
@@ -157,11 +175,7 @@ class Customers extends Component {
                                     <TextInput labelwidth="3" label="Customer Name" inputwidth="9" name="name" readOnly={this.state.mode === "read"} />
                                 </FormGroup>
                             </div>
-                            <div className="offset-2 col-2">
-                                <Button outline color="primary" onClick={this.handleEdit} className="mr-2" aria-label="Edit"><i className="far fa-edit fa-lg"></i></Button>
-                                <Button outline color="warning" aria-label="Delete" className="mr-2"><i className="far fa-trash-alt fa-lg"></i></Button>
-                                <Button outline color="primary" onClick={this.handleAdd}  aria-label="Add"><i className="fas fa-plus fa-lg"></i></Button>
-                            </div>
+                            <Controls />
                         </div>
                         <div className="row">
                             <fieldset style={fieldsetStyle}><legend style={legendStyle}>Address</legend>
