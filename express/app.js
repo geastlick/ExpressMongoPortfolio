@@ -5,10 +5,10 @@ const methodOverride = require('method-override');
 const passport = require('passport');
 const morgan = require('morgan');
 const config = require('./config');
-const restful = require('node-restful');
+const restful = require('./lib/restful');
 const authenticate = require('./authenticate');
 
-const authRouter = require('./routes/authRouter');
+const routes = require('./routes');
 const orderRouter = require('./routes/orderRouter');
 /*  Swapping out routers for node-restful
 const customerRouter = require('./routes/customerRouter');
@@ -86,7 +86,7 @@ app.use(passport.initialize());
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/auth', authRouter);
+app.use('/', routes);
 /*  Swapping out routers for node-restful
 app.use('/api/customers', customerRouter);
 app.use('/api/inventory', inventoryRouter);

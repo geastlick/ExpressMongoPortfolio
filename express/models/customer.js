@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 require('mongoose-currency').loadType(mongoose);
 const Currency = mongoose.Types.Currency;
 const Schema = mongoose.Schema;
+const ObjectId = mongoose.ObjectId;
 
 const address = new Schema({
     line1: String,
@@ -12,6 +13,7 @@ const address = new Schema({
 });
 
 const phone = new Schema({
+    _id: ObjectId,
     phone: String,
     type: {
         type: String,
@@ -20,27 +22,29 @@ const phone = new Schema({
 });
 
 const contact = new Schema({
+    _id: ObjectId,
     name: String,
     email: String,
     address: address,
     phone: [phone]
 });
 
+const orderItemAmounts = new Schema({
+    _id: ObjectId,
+    amount: Currency,
+    description: String
+})
+
 const orderItem = new Schema({
+    _id: ObjectId,
     lineItem: String,
     cost: {
         type: Currency
     },
     deliveryEstimate: Date,
     location: String,
-    discounts: [{
-        amount: Currency,
-        description: String
-    }],
-    fees: [{
-        amount: Currency,
-        description: String
-    }],
+    discounts: [orderItemAmounts],
+    fees: [orderItemAmounts],
     rentalPeriod: {
         type: String,
         enum: ["monthly", "weekly", "daily", "date"]
@@ -49,11 +53,13 @@ const orderItem = new Schema({
 });
 
 const order = new Schema({
+    _id: ObjectId,
     number: String,
     items: [orderItem]
 })
 
 const customerSchema = new Schema({
+  _id: ObjectId,
   name: String,
   address: address,
   phones: [phone],
