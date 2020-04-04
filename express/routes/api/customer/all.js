@@ -29,7 +29,7 @@ customerRouter.route('/')
 })
 .delete((req, res) => {
     res.statusCode = 403;
-    res.end('POST operation not supported on /customers');
+    res.end('DELETE operation not supported on /customers');
 });
 
 module.exports = customerRouter;

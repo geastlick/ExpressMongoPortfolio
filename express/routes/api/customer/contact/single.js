@@ -1,4 +1,4 @@
-const customerRouter = require('express').Router();
+const customerRouter = require('express').Router({mergeParams: true});
 const bodyParser = require('body-parser');
 const Customer = require('../../../../models/customer');
 
@@ -8,9 +8,10 @@ customerRouter.route('/:contactId')
 .get((req, res, next) => {
     Customer.findById(req.params.customerId)
     .then(customer => {
+        console.log(customer);
         res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');
-        res.json(customer.contact.id(req.params.contactId));
+        res.json(customer.contacts.id(req.params.contactId));
     })
     .catch(err => next(err));
 })

@@ -7,7 +7,6 @@ const contact=require('./contact');
 
 routes.all('/', all);
 routes.all('/:customerId', single);
-
-routes.all('/:customerId/contacts', contact);
+routes.use('/:customerId/contacts', contact);
 
 module.exports = routes;

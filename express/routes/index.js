@@ -1,4 +1,4 @@
-const routes = require('express').Router();
+const routes = require('express').Router({mergeParams: true});
 const auth = require('./auth');
 const api = require('./api');
 
