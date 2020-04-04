@@ -1,15 +1,10 @@
-const express = require('express');
+const inventoryRouter = require('express').Router();
 const bodyParser = require('body-parser');
-const authenticate = require('../authenticate');
+const Inventory = require('../../../models/inventory');
 
-const Inventory = require('../models/inventory');
-const inventoryRouter = express.Router();
 inventoryRouter.use(bodyParser.json());
 
 inventoryRouter.route('/')
-.all(authenticate.verifyUser, (req, res, next) => {
-    next();
-})
 .get((req, res, next) => {
     Inventory.find()
     .then(inventory => {

@@ -1,15 +1,10 @@
-const express = require('express');
+const scheduleRouter = require('express').Router();
 const bodyParser = require('body-parser');
-const authenticate = require('../authenticate');
+const Schedule = require('../../../models/schedule');
 
-const Schedule = require('../models/schedule');
-const scheduleRouter = express.Router();
 scheduleRouter.use(bodyParser.json());
 
 scheduleRouter.route('/')
-.all(authenticate.verifyUser, (req, res, next) => {
-    next();
-})
 .get((req, res, next) => {
     Schedule.find()
     .then(schedules => {

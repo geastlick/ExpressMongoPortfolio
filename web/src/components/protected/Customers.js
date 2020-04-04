@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
 import { Typeahead } from 'react-bootstrap-typeahead';
-import { Form, FormGroup, Button, Input } from 'reactstrap';
-import { Formik } from 'formik';
-import { TextInput } from '../common/FormikFields';
+import { Form, FormGroup, Button, Input, Table, Nav, NavItem, NavLink, TabPane, TabContent } from 'reactstrap';
+import classnames from 'classnames';
+import { Formik, FieldArray } from 'formik';
+import { TextInput, Select } from '../common/FormikFields';
 import * as Yup from 'yup';
+import IconIcon from '../common/IconIcon';
 
 class Customers extends Component {
     constructor(props) {
@@ -13,7 +15,8 @@ class Customers extends Component {
             mode: "read",
             action: "read",
             selectionType: "Customer",
-            selection: {}
+            selection: {},
+            activeContactTab: ''
         }
     }
     componentDidMount() {
@@ -24,8 +27,28 @@ class Customers extends Component {
         }
     }
 
-    selectionMade = (selected) => {
+    emptyCustomer = () => {
+        return {
+            name: '',
+            address: {
+                line1: '',
+                line2: '',
+                city: '',
+                state: '',
+                zip: ''
+            },
+            websites: [],
+            emails: [],
+            phones: [],
+            contacts: []
+        }
+    }
+    selectionMade = (selected, {formik}) => {
         this.setState({selection: selected[0]});
+        const customer = this.props.customers.customers.filter(customer => customer._id === selected[0].customerId)[0];
+        this.setState({activeContactTab: customer.company.contacts[0]._id});
+        const initialValues = customer?.company;
+        formik.resetForm({values: initialValues});
     }
 
     changeSelectionType = (e) => {
@@ -34,17 +57,28 @@ class Customers extends Component {
         });
     }
 
-    handleEdit = () => {
+    handleEdit = (e, {formik}) => {
         this.setState({action: "edit", mode: "update"});
     }
-    handleAdd = () => {
+    handleAdd = (e, {formik}) => {
         this.setState({action: "add", mode: "update"});
+        const initialValues = this.emptyCustomer();
+        formik.resetForm({values: initialValues});
     }
-    handleDelete = () => {
+    handleDelete = (e, {formik}) => {
         this.setState({action: "delete", mode: "read"});
     }
-    handleCancel = () => {
-        this.setState({action: "read", mode: "read"});
+    handleCancel = (e, {formik}) => {
+        if(this.state.selection.customerId) {
+            const customer = this.props.customers.customers.filter(customer => customer._id === this.state.selection.customerId)[0];
+            this.setState({activeContactTab: customer.company.contacts[0]._id});
+            const initialValues = customer?.company;
+            formik.resetForm({values: initialValues});
+            this.setState({action: "read", mode: "read"});
+        }
+    }
+    setActiveContactTab = (tab) => {
+        if(this.state.activeContactTab !== tab) this.setState({activeContactTab: tab});
     }
 
     render() {
@@ -52,24 +86,25 @@ class Customers extends Component {
             return <Redirect to={{pathname: '/signin', state: {from: this.location}}} />
         }
         const customerSearchOptions = this.props.customers.customers.map(customer => {
-            return {customerId: customer._id, customerName: customer.name};
+            return {customerId: customer._id, customerName: customer.company.name};
         });
         const contactSearchOptions = [].concat.apply([],this.props.customers.customers.map(customer => {
-            return customer.contacts.map(contact => {
-                return {customerId: customer._id, customerName: customer.name, contactName: contact.name};
+            return customer.company.contacts.map(contact => {
+                return {customerId: customer._id, customerName: customer.company.name, contactName: contact.name};
             });
         }));
         const fieldsetStyle = {
             "margin": "8px",
             "border": "1px solid silver",
             "padding": "8px",    
-            "borderRadius": "4px"
+            "borderRadius": "4px",
+            "width": "100%"
         };
         const legendStyle = {
             "padding": "2px"    
         };
 
-        const SearchField = () => {
+        const SearchField = (props) => {
             if(this.state.action === "read") {
                 if(this.state.selectionType === "Customer") {
                     return (
@@ -78,7 +113,7 @@ class Customers extends Component {
                             options={customerSearchOptions}
                             labelKey="customerName"
                             placeholder="Choose a customer..."
-                            onChange={this.selectionMade}
+                            onChange={(e) => {this.selectionMade(e,props)}}
                         />
                     );
                 } else {
@@ -88,13 +123,13 @@ class Customers extends Component {
                             options={contactSearchOptions}
                             labelKey="contactName"
                             placeholder="Choose a contact..."
-                            onChange={this.selectionMade}
+                            onChange={(e) => {this.selectionMade(e,props)}}
                         />
                     );
                 }
             } else return <React.Fragment></React.Fragment>;
         }
-        const SearchType = () => {
+        const SearchType = (props) => {
             if(this.state.action === "read") {
                 return (
                     <Input type="select" name="select" id="selectionType" onChange={this.changeSelectionType} value={this.state.selectionType}>
@@ -105,26 +140,26 @@ class Customers extends Component {
             } else return <React.Fragment></React.Fragment>;
         }
 
-        const Controls = () => {
+        const Controls = (props) => {
             if(this.state.action === "read") {
                 return (
                     <div className="offset-2 col-2">
-                        <Button outline color="primary" onClick={this.handleEdit} className="mr-2" aria-label="Edit"><i className="far fa-edit fa-lg"></i></Button>
-                        <Button outline color="warning" onClick={this.handleDelete} className="mr-2" aria-label="Delete"><i className="far fa-trash-alt fa-lg"></i></Button>
-                        <Button outline color="primary" onClick={this.handleAdd}  aria-label="Add"><i className="fas fa-plus fa-lg"></i></Button>
+                        <Button outline color="primary" onClick={(e) => this.handleEdit(e, props)} className="mr-2" aria-label="Edit"><i className="far fa-edit fa-lg"></i></Button>
+                        <Button outline color="warning" onClick={(e) => this.handleDelete(e, props)} className="mr-2" aria-label="Delete"><i className="far fa-trash-alt fa-lg"></i></Button>
+                        <Button outline color="primary" onClick={(e) => this.handleAdd(e, props)}  aria-label="Add"><i className="fas fa-plus fa-lg"></i></Button>
                     </div>
                 );
             } else if(this.state.action === "edit" || this.state.action === "add") {
                 return (
                     <React.Fragment>
-                        <div className="offset-2 col-1"><Button onClick={this.handleCancel} color="secondary">Cancel</Button></div>
+                        <div className="offset-2 col-1"><Button onClick={(e) => this.handleCancel(e, props)} color="secondary">Cancel</Button></div>
                         <div className="col-1"><Button color="primary">Save</Button></div>
                     </React.Fragment>
                 );
             } else if(this.state.action === "delete") {
                 return (
                     <React.Fragment>
-                        <div className="offset-2 col-1"><Button onClick={this.handleCancel} color="secondary">Cancel</Button></div>
+                        <div className="offset-2 col-1"><Button onClick={(e) => this.handleCancel(e, props)} color="secondary">Cancel</Button></div>
                         <div className="col-1"><Button color="danger">Confirm</Button></div>
                     </React.Fragment>
                 )
@@ -133,19 +168,8 @@ class Customers extends Component {
 
         return (
             <div id="content" className="container">
-                <div className="row row-content">
-                    <div className="col-4"><h2>Customers</h2></div>
-                    <div className="col-5">
-                        <SearchField />
-                    </div>
-                    <div className="col-3">
-                        <SearchType />
-                    </div>
-                    <hr />
-                </div>
-                {this.state.selection && Object.keys(this.state.selection).length !== 0 ?
                 <Formik
-                    initialValues={this.props.customers.customers.filter(customer => customer._id === this.state.selection.customerId)[0]}
+                    initialValues={this.props.customers.customers.filter(customer => customer._id === this.state.selection.customerId)[0]?.company}
                     validationSchema={Yup.object({
                         name: Yup.string()
                             .min(5, 'Must be between 5 and 30 characters')
@@ -169,37 +193,179 @@ class Customers extends Component {
                 >
                 {formik => (
                     <Form>
-                        <div className="row row-content mt-3" >
-                            <div className="col-8">
-                                <FormGroup row>
-                                    <TextInput labelwidth="3" label="Customer Name" inputwidth="9" name="name" readOnly={this.state.mode === "read"} />
-                                </FormGroup>
+                        <div className="row row-content">
+                            <div className="col-4"><h2>Customers</h2></div>
+                            <div className="col-5">
+                                <SearchField formik={formik} />
                             </div>
-                            <Controls />
+                            <div className="col-3">
+                                <SearchType formik={formik} />
+                            </div>
+                            <hr />
                         </div>
-                        <div className="row">
-                            <fieldset style={fieldsetStyle}><legend style={legendStyle}>Address</legend>
-                                <FormGroup row>
-                                    <TextInput labelwidth="1" label="Line 1" inputwidth="11" name="address.line1" readOnly={this.state.mode === "read"} />
-                                    <TextInput labelwidth="1" label="Line 2" inputwidth="11" name="address.line2" readOnly={this.state.mode === "read"} />
-                                    <TextInput labelwidth="1" label="City" inputwidth="6" name="address.city" readOnly={this.state.mode === "read"} />
-                                    <TextInput labelwidth="1" label="State" inputwidth="1" name="address.state" readOnly={this.state.mode === "read"} />
-                                    <TextInput labelwidth="1" label="Zip Code" inputwidth="2" name="address.zip" readOnly={this.state.mode === "read"} />
-                                </FormGroup>
-                            </fieldset>
+                        {this.state.selection && Object.keys(this.state.selection).length !== 0 ?
+                            <React.Fragment>
+                            <div className="row row-content mt-3" >
+                                <div className="col-8">
+                                    <FormGroup row>
+                                        <TextInput labelwidth="3" label="Customer Name" inputwidth="9" name="name" readOnly={this.state.mode === "read"} />
+                                    </FormGroup>
+                                </div>
+                                <Controls formik={formik} />
+                            </div>
+                            <div className="row">
+                                <fieldset style={fieldsetStyle}><legend style={legendStyle}>Address</legend>
+                                    <FormGroup row>
+                                        <TextInput labelwidth="1" label="Line" inputwidth="11" name="address.line1" readOnly={this.state.mode === "read"} />
+                                        <TextInput labelwidth="1" label="Line" inputwidth="11" name="address.line2" readOnly={this.state.mode === "read"} />
+                                        <TextInput labelwidth="1" label="City" inputwidth="6" name="address.city" readOnly={this.state.mode === "read"} />
+                                        <TextInput labelwidth="1" label="State" inputwidth="1" name="address.state" readOnly={this.state.mode === "read"} />
+                                        <TextInput labelwidth="1" label="Zip Code" inputwidth="2" name="address.zip" readOnly={this.state.mode === "read"} />
+                                    </FormGroup>
+                                </fieldset>
+                            </div>
+                            <div className="row">
+                            <fieldset style={fieldsetStyle}><legend style={legendStyle}>Info</legend>
+                                    <Table small borderless hoverable>
+                                        <thead><tr><th></th><th></th><th></th><th>
+                                          {this.state.mode === "read" ? <React.Fragment></React.Fragment> :
+                                          <React.Fragment>
+                                            <Button color="link" onClick={(e) => this.handlePhoneAdd(e, formik)}  aria-label="Add Phone"><IconIcon icon="fa-phone-alt" iconIcon="fa-plus" /></Button>
+                                            <Button color="link" onClick={(e) => this.handleUrlAdd(e, formik)}  aria-label="Add URL"><IconIcon icon="fa-globe" iconIcon="fa-plus" /></Button>
+                                            <Button color="link" onClick={(e) => this.handleEmailAdd(e, formik)}  aria-label="Add Email"><IconIcon icon="fa-envelope" iconIcon="fa-plus" /></Button>
+                                          </React.Fragment>
+                                        }
+                                        </th></tr></thead>
+                                        <tbody>
+                                        <FieldArray
+                                            name="urls"
+                                            render={arrayHelpers => (
+                                                <React.Fragment>
+                                                    {formik.values.urls?.map((url,index) => (
+                                                        <tr key={`url${index}`}>
+                                                            <td>URL</td>
+                                                            <td colSpan="2">
+                                                                <TextInput nolabel name={`urls.${index}`} readOnly={this.state.mode === "read"} />
+                                                            </td>
+                                                            <td>
+                                                            {this.state.mode === "read" ? <React.Fragment></React.Fragment> :
+                                                                <Button outline color="warning" onClick={(e) => this.handleUrlDelete(e, formik)} aria-label="Delete"><i className="far fa-trash-alt fa-lg"></i></Button>
+                                                            }
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </React.Fragment>
+                                            )}
+                                        />
+                                        <FieldArray
+                                            name="emails"
+                                            render={arrayHelpers => (
+                                                <React.Fragment>
+                                                    {formik.values.emails?.map((email,index) => (
+                                                        <tr key={`email${index}`}>
+                                                            <td>Email</td>
+                                                            <td colSpan="2">
+                                                                <TextInput nolabel name={`emails.${index}`} readOnly={this.state.mode === "read"} />
+                                                            </td>
+                                                            <td>
+                                                            {this.state.mode === "read" ? <React.Fragment></React.Fragment> :
+                                                                <Button outline color="warning" onClick={(e) => this.handleEmailDelete(e, formik)} aria-label="Delete"><i className="far fa-trash-alt fa-lg"></i></Button>
+                                                            }
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </React.Fragment>
+                                            )}
+                                        />
+                                        <FieldArray
+                                            name="phones"
+                                            render={arrayHelpers => (
+                                                <React.Fragment>
+                                                    {formik.values.phones?.map((phone,index) => (
+                                                        <tr key={`phone${index}`}>
+                                                            <td>Phone</td>
+                                                            <td><Select nolabel name={`phones.${index}.phoneType`} readOnly={this.state.mode === "read"} style={{"width": "5em"}}>
+                                                                <option>cell</option>
+                                                                <option>line</option>
+                                                                <option>fax</option>
+                                                                </Select>
+                                                            </td><td>
+                                                                <TextInput nolabel name={`phones.${index}.phone`} readOnly={this.state.mode === "read"} style={{"width": "15em"}} />
+                                                            </td>
+                                                            <td>
+                                                            {this.state.mode === "read" ? <React.Fragment></React.Fragment> :
+                                                                <Button outline color="warning" onClick={(e) => this.handlePhoneDelete(e, formik)} aria-label="Delete"><i className="far fa-trash-alt fa-lg"></i></Button>
+                                                            }
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </React.Fragment>
+                                            )}
+                                        />
+                                        </tbody>
+                                    </Table>
+                                </fieldset>
+                            </div>
+                            <div className="row">
+                                <fieldset style={fieldsetStyle}>
+                                    <legend style={legendStyle}>
+                                        Contacts&nbsp;&nbsp;
+                                        {this.state.mode === "read" ? <React.Fragment></React.Fragment> :
+                                            <Button outline color="primary" onClick={(e) => this.handleContactAdd(e, formik)}  aria-label="Add"><i className="fas fa-plus fa-lg"></i></Button>
+                                        }
+                                    </legend>
+                                    <FieldArray
+                                        name="contacts"
+                                        render={arrayHelpers => (
+                                            <div>
+                                                <Nav tabs>
+                                                    {formik.values.contacts?.map((contact,index) => (
+                                                        <NavItem>
+                                                            <NavLink
+                                                                className={classnames({ active: this.state.activeContactTab === contact._id})}
+                                                                onClick={() => this.setActiveContactTab(contact._id)}
+                                                            >
+                                                                {contact.name}
+                                                            </NavLink>
+                                                        </NavItem>
+                                                    ))}
+                                                    <NavItem>
+                                                        <NavLink
+                                                            className={classnames({ active: this.state.activeContactTab === "New"})}
+                                                            onClick={() => this.setActiveContactTab("New")}
+                                                        >
+                                                            *New
+                                                        </NavLink>
+                                                    </NavItem>
+                                                </Nav>
+                                                <TabContent activeTab={this.state.activeContactTab}>
+                                                    {formik.values.contacts?.map((contact,index) => (
+                                                        <TabPane tabId={contact._id}>
+                                                        <div>Contact {index}</div>
+                                                        {formik.values.contacts[index].phones?.map((phone,phoneIndex) => (
+                                                            <div key={phone._id}>Phone {phoneIndex}</div>
+                                                        ))}
+                                                        </TabPane>
+                                                    ))}
+                                                </TabContent>
+                                            </div>
+                                        )}
+                                    />
+                                </fieldset>
+                            </div>
                             <div>{JSON.stringify(formik.values, null, 2)}</div>
-                        </div>
+                            </React.Fragment>
+                        :
+                        <React.Fragment>
+                            <div className="row row-content mt-3">
+                                <div className="col-10">No customer selected.</div>
+                                <div className="col-2"><Button outline color="primary" onClick={this.handleAdd}  aria-label="Add"><i className="fas fa-plus fa-lg"></i></Button></div>
+                            </div>
+                        </React.Fragment>
+                        }
                     </Form>
                 )}
                 </Formik>
-                :
-                <React.Fragment>
-                    <div className="row row-content mt-3">
-                        <div className="col-10">No customer selected.</div>
-                        <div className="col-2"><Button outline color="primary" onClick={this.handleAdd}  aria-label="Add"><i className="fas fa-plus fa-lg"></i></Button></div>
-                    </div>
-                </React.Fragment>
-                }
             </div>
         );
     }
