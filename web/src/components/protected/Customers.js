@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
 import { Typeahead } from 'react-bootstrap-typeahead';
-import { Form, FormGroup, Button, Input, Table, Nav, NavItem, NavLink, TabPane, TabContent } from 'reactstrap';
+import { Form, FormGroup, Button, Input, Table, Nav, NavItem, NavLink, TabPane, TabContent, Col, Row } from 'reactstrap';
 import classnames from 'classnames';
 import { Formik, FieldArray } from 'formik';
 import { TextInput, Select } from '../common/FormikFields';
@@ -37,7 +37,7 @@ class Customers extends Component {
                 state: '',
                 zip: ''
             },
-            websites: [],
+            urls: [],
             emails: [],
             phones: [],
             contacts: []
@@ -46,8 +46,8 @@ class Customers extends Component {
     selectionMade = (selected, {formik}) => {
         this.setState({selection: selected[0]});
         const customer = this.props.customers.customers.filter(customer => customer._id === selected[0].customerId)[0];
-        this.setState({activeContactTab: customer.company.contacts[0]._id});
-        const initialValues = customer?.company;
+        this.setState({activeContactTab: customer.contacts[0]._id});
+        const initialValues = customer;
         formik.resetForm({values: initialValues});
     }
 
@@ -71,8 +71,8 @@ class Customers extends Component {
     handleCancel = (e, {formik}) => {
         if(this.state.selection.customerId) {
             const customer = this.props.customers.customers.filter(customer => customer._id === this.state.selection.customerId)[0];
-            this.setState({activeContactTab: customer.company.contacts[0]._id});
-            const initialValues = customer?.company;
+            this.setState({activeContactTab: customer.contacts[0]._id});
+            const initialValues = customer;
             formik.resetForm({values: initialValues});
             this.setState({action: "read", mode: "read"});
         }
@@ -86,11 +86,11 @@ class Customers extends Component {
             return <Redirect to={{pathname: '/signin', state: {from: this.location}}} />
         }
         const customerSearchOptions = this.props.customers.customers.map(customer => {
-            return {customerId: customer._id, customerName: customer.company.name};
+            return {customerId: customer._id, customerName: customer.name};
         });
         const contactSearchOptions = [].concat.apply([],this.props.customers.customers.map(customer => {
-            return customer.company.contacts.map(contact => {
-                return {customerId: customer._id, customerName: customer.company.name, contactName: contact.name};
+            return customer.contacts.map(contact => {
+                return {customerId: customer._id, customerName: customer.name, contactName: contact.name};
             });
         }));
         const fieldsetStyle = {
@@ -169,7 +169,7 @@ class Customers extends Component {
         return (
             <div id="content" className="container">
                 <Formik
-                    initialValues={this.props.customers.customers.filter(customer => customer._id === this.state.selection.customerId)[0]?.company}
+                    initialValues={this.props.customers.customers.filter(customer => customer._id === this.state.selection.customerId)[0]}
                     validationSchema={Yup.object({
                         name: Yup.string()
                             .min(5, 'Must be between 5 and 30 characters')
@@ -222,11 +222,8 @@ class Customers extends Component {
                                         <TextInput labelwidth="1" label="State" inputwidth="1" name="address.state" readOnly={this.state.mode === "read"} />
                                         <TextInput labelwidth="1" label="Zip Code" inputwidth="2" name="address.zip" readOnly={this.state.mode === "read"} />
                                     </FormGroup>
-                                </fieldset>
-                            </div>
-                            <div className="row">
-                            <fieldset style={fieldsetStyle}><legend style={legendStyle}>Info</legend>
-                                    <Table small borderless hoverable>
+
+                                    <Table borderless >
                                         <thead><tr><th></th><th></th><th></th><th>
                                           {this.state.mode === "read" ? <React.Fragment></React.Fragment> :
                                           <React.Fragment>
@@ -290,7 +287,7 @@ class Customers extends Component {
                                                                 <option>fax</option>
                                                                 </Select>
                                                             </td><td>
-                                                                <TextInput nolabel name={`phones.${index}.phone`} readOnly={this.state.mode === "read"} style={{"width": "15em"}} />
+                                                                <TextInput nolabel name={`phones.${index}.phoneNumber`} readOnly={this.state.mode === "read"} style={{"width": "15em"}} />
                                                             </td>
                                                             <td>
                                                             {this.state.mode === "read" ? <React.Fragment></React.Fragment> :
@@ -318,9 +315,11 @@ class Customers extends Component {
                                         name="contacts"
                                         render={arrayHelpers => (
                                             <div>
-                                                <Nav tabs>
+                                                <Row>
+                                                    <Col sm={2}>
+                                                <Nav tabs pills className="flex-column">
                                                     {formik.values.contacts?.map((contact,index) => (
-                                                        <NavItem>
+                                                        <NavItem key={`contact${index}`}>
                                                             <NavLink
                                                                 className={classnames({ active: this.state.activeContactTab === contact._id})}
                                                                 onClick={() => this.setActiveContactTab(contact._id)}
@@ -329,25 +328,105 @@ class Customers extends Component {
                                                             </NavLink>
                                                         </NavItem>
                                                     ))}
-                                                    <NavItem>
-                                                        <NavLink
-                                                            className={classnames({ active: this.state.activeContactTab === "New"})}
-                                                            onClick={() => this.setActiveContactTab("New")}
-                                                        >
-                                                            *New
-                                                        </NavLink>
-                                                    </NavItem>
                                                 </Nav>
+                                                </Col>
+                                                <Col sm={10}>
                                                 <TabContent activeTab={this.state.activeContactTab}>
-                                                    {formik.values.contacts?.map((contact,index) => (
-                                                        <TabPane tabId={contact._id}>
-                                                        <div>Contact {index}</div>
-                                                        {formik.values.contacts[index].phones?.map((phone,phoneIndex) => (
-                                                            <div key={phone._id}>Phone {phoneIndex}</div>
-                                                        ))}
+                                                    {formik.values.contacts?.map((contact,contactIndex) => (
+                                                        <TabPane tabId={contact._id} key={`contact${contactIndex}`}>
+                            <div className="row">
+                                    <FormGroup row>
+                                        <TextInput labelwidth="1" label="Line" inputwidth="11" name={`contacts.${contactIndex}.address.line1`} readOnly={this.state.mode === "read"} />
+                                        <TextInput labelwidth="1" label="Line" inputwidth="11" name={`contacts.${contactIndex}.address.line2`} readOnly={this.state.mode === "read"} />
+                                        <TextInput labelwidth="1" label="City" inputwidth="6" name={`contacts.${contactIndex}.address.city`} readOnly={this.state.mode === "read"} />
+                                        <TextInput labelwidth="1" label="State" inputwidth="1" name={`contacts.${contactIndex}.address.state`} readOnly={this.state.mode === "read"} />
+                                        <TextInput labelwidth="1" label="Zip Code" inputwidth="2" name={`contacts.${contactIndex}.address.zip`} readOnly={this.state.mode === "read"} />
+                                    </FormGroup>
+
+                                    <Table  borderless >
+                                        <thead><tr><th></th><th></th><th></th><th>
+                                          {this.state.mode === "read" ? <React.Fragment></React.Fragment> :
+                                          <React.Fragment>
+                                            <Button color="link" onClick={(e) => this.handlePhoneAdd(e, formik)}  aria-label="Add Phone"><IconIcon icon="fa-phone-alt" iconIcon="fa-plus" /></Button>
+                                            <Button color="link" onClick={(e) => this.handleUrlAdd(e, formik)}  aria-label="Add URL"><IconIcon icon="fa-globe" iconIcon="fa-plus" /></Button>
+                                            <Button color="link" onClick={(e) => this.handleEmailAdd(e, formik)}  aria-label="Add Email"><IconIcon icon="fa-envelope" iconIcon="fa-plus" /></Button>
+                                          </React.Fragment>
+                                        }
+                                        </th></tr></thead>
+                                        <tbody>
+                                        <FieldArray
+                                            name={`contacts.${contactIndex}.urls`}
+                                            render={arrayHelpers => (
+                                                <React.Fragment>
+                                                    {formik.values.contacts[contactIndex].urls?.map((url,urlIndex) => (
+                                                        <tr key={`url${urlIndex}`}>
+                                                            <td>URL</td>
+                                                            <td colSpan="2">
+                                                                <TextInput nolabel name={`contacts.${contactIndex}.urls.${urlIndex}`} readOnly={this.state.mode === "read"} />
+                                                            </td>
+                                                            <td>
+                                                            {this.state.mode === "read" ? <React.Fragment></React.Fragment> :
+                                                                <Button outline color="warning" onClick={(e) => this.handleUrlDelete(e, formik)} aria-label="Delete"><i className="far fa-trash-alt fa-lg"></i></Button>
+                                                            }
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </React.Fragment>
+                                            )}
+                                        />
+                                        <FieldArray
+                                            name={`contacts.${contactIndex}.emails`}
+                                            render={arrayHelpers => (
+                                                <React.Fragment>
+                                                    {formik.values.contacts[contactIndex].emails?.map((email,emailIndex) => (
+                                                        <tr key={`email${emailIndex}`}>
+                                                            <td>Email</td>
+                                                            <td colSpan="2">
+                                                                <TextInput nolabel name={`contacts.${contactIndex}.emails.${emailIndex}`} readOnly={this.state.mode === "read"} />
+                                                            </td>
+                                                            <td>
+                                                            {this.state.mode === "read" ? <React.Fragment></React.Fragment> :
+                                                                <Button outline color="warning" onClick={(e) => this.handleEmailDelete(e, formik)} aria-label="Delete"><i className="far fa-trash-alt fa-lg"></i></Button>
+                                                            }
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </React.Fragment>
+                                            )}
+                                        />
+                                        <FieldArray
+                                            name={`contacts.${contactIndex}.phones`}
+                                            render={arrayHelpers => (
+                                                <React.Fragment>
+                                                    {formik.values.contacts[contactIndex].phones?.map((phone,phoneIndex) => (
+                                                        <tr key={`phone${phoneIndex}`}>
+                                                            <td>Phone</td>
+                                                            <td><Select nolabel name={`contacts.${contactIndex}.phones.${phoneIndex}.phoneType`} readOnly={this.state.mode === "read"} style={{"width": "5em"}}>
+                                                                <option>cell</option>
+                                                                <option>line</option>
+                                                                <option>fax</option>
+                                                                </Select>
+                                                            </td><td>
+                                                                <TextInput nolabel name={`contacts.${contactIndex}.phones.${phoneIndex}.phoneNumber`} readOnly={this.state.mode === "read"} style={{"width": "15em"}} />
+                                                            </td>
+                                                            <td>
+                                                            {this.state.mode === "read" ? <React.Fragment></React.Fragment> :
+                                                                <Button outline color="warning" onClick={(e) => this.handlePhoneDelete(e, formik)} aria-label="Delete"><i className="far fa-trash-alt fa-lg"></i></Button>
+                                                            }
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </React.Fragment>
+                                            )}
+                                        />
+                                        </tbody>
+                                    </Table>
+                            </div>
+
                                                         </TabPane>
                                                     ))}
                                                 </TabContent>
+                                                </Col></Row>
                                             </div>
                                         )}
                                     />
