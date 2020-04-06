@@ -15,7 +15,7 @@ export const TextInput = ({ label, inputwidth, labelwidth, nolabel, ...props }) 
   if(nolabel) {
     return (
       <Fragment>
-        <Input type="text" {...field} {...props} />
+        <Input type="text" className="form-control" {...field} {...props} />
         {meta.touched && meta.error ? (
           <div className="error">{meta.error}</div>
         ) : null}
@@ -26,7 +26,7 @@ export const TextInput = ({ label, inputwidth, labelwidth, nolabel, ...props }) 
     <Fragment>
       <Label htmlFor={props.id || props.name} sm={labelwidth}>{label}</Label>
       <Col sm={inputwidth}>
-        <Input type="text" {...field} {...props} />
+        <Input type="text" className="form-control" {...field} {...props} />
         {meta.touched && meta.error ? (
           <div className="error">{meta.error}</div>
         ) : null}
@@ -43,7 +43,7 @@ export const Checkbox = ({ children, inputwidth, labelwidth, nolabel, ...props }
   if(nolabel) {
     return (
       <Fragment>
-          <Input type="checkbox" {...field} {...props} disabled={props.readOnly} />
+          <Input type="checkbox" className="form-control" {...field} {...props} disabled={props.readOnly} />
           {children}
           {meta.touched && meta.error ? (
             <div className="error">{meta.error}</div>
@@ -55,7 +55,7 @@ export const Checkbox = ({ children, inputwidth, labelwidth, nolabel, ...props }
     <Fragment>
       <Label className="checkbox" sm={props.labelwidth}>
         <Col sm={props.inputwidth}>
-          <Input type="checkbox" {...field} {...props} disabled={props.readOnly} />
+          <Input type="checkbox" className="form-control" {...field} {...props} disabled={props.readOnly} />
           {children}
           {meta.touched && meta.error ? (
             <div className="error">{meta.error}</div>
@@ -71,7 +71,7 @@ export const Select = ({ label, inputwidth, labelwidth, nolabel, ...props }) => 
   if(nolabel) {
     return (
       <Fragment>
-        <Input type="select" {...field} {...props} disabled={props.readOnly} />
+        <Input type="select" className="form-control" {...field} {...props} disabled={props.readOnly} />
           {meta.touched && meta.error ? (
             <div className="error">{meta.error}</div>
           ) : null}
@@ -82,7 +82,7 @@ export const Select = ({ label, inputwidth, labelwidth, nolabel, ...props }) => 
     <Fragment>
       <Label htmlFor={props.id || props.name} sm={props.labelwidth}>{label}</Label>
       <Col sm={props.inputwidth}>
-      <Input type="select" {...field} {...props} disabled={props.readOnly} />
+      <Input type="select" className="form-control" {...field} {...props} disabled={props.readOnly} />
         {meta.touched && meta.error ? (
           <div className="error">{meta.error}</div>
         ) : null}

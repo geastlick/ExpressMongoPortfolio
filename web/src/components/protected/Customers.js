@@ -304,7 +304,7 @@ class Customers extends Component {
                                 </fieldset>
                             </div>
                             <div className="row">
-                                <fieldset style={fieldsetStyle}>
+                                <fieldset style={fieldsetStyle} className="pl-2 pr-4">
                                     <legend style={legendStyle}>
                                         Contacts&nbsp;&nbsp;
                                         {this.state.mode === "read" ? <React.Fragment></React.Fragment> :
@@ -335,13 +335,11 @@ class Customers extends Component {
                                                     {formik.values.contacts?.map((contact,contactIndex) => (
                                                         <TabPane tabId={contact._id} key={`contact${contactIndex}`}>
                             <div className="row">
-                                    <FormGroup row>
                                         <TextInput labelwidth="1" label="Line" inputwidth="11" name={`contacts.${contactIndex}.address.line1`} readOnly={this.state.mode === "read"} />
                                         <TextInput labelwidth="1" label="Line" inputwidth="11" name={`contacts.${contactIndex}.address.line2`} readOnly={this.state.mode === "read"} />
                                         <TextInput labelwidth="1" label="City" inputwidth="6" name={`contacts.${contactIndex}.address.city`} readOnly={this.state.mode === "read"} />
                                         <TextInput labelwidth="1" label="State" inputwidth="1" name={`contacts.${contactIndex}.address.state`} readOnly={this.state.mode === "read"} />
                                         <TextInput labelwidth="1" label="Zip Code" inputwidth="2" name={`contacts.${contactIndex}.address.zip`} readOnly={this.state.mode === "read"} />
-                                    </FormGroup>
 
                                     <Table  borderless >
                                         <thead><tr><th></th><th></th><th></th><th>
